@@ -47,38 +47,17 @@ namespace ComicRepacker
                 Directory.CreateDirectory(m_sTempFolder);
 
                 RefreshList();
-
+                this.UseWaitCursor = true;
                 timerProgress.Start();
                 bgWorkerLoading.RunWorkerAsync(dlg.FileNames);
-
-
-
-                //ProcessStartInfo info = new ProcessStartInfo("7za.exe");
-                //info.Arguments = string.Format("x  \"{0}\" -r -o\"{1}\"", dlg.FileName, sSourceFolder);
-                //info.WindowStyle = ProcessWindowStyle.Hidden;
-                //Process.Start(info).WaitForExit();
-
-                //DirectoryInfo tempDirInfo = new DirectoryInfo(sSourceFolder);
-                //FileInfo[] tempZipFileInfos = tempDirInfo.GetFiles("*.zip");
-                //if(tempZipFileInfos.Length == 0)
-                //    tempZipFileInfos = tempDirInfo.GetFiles("*.rar");
-                //ExtractChildArchive(tempZipFileInfos, sSourceFolder);
-
-                //SlideFile(dirInfoSource, dirInfoTarget);
-
-                //SaveFileDialog saveDlg = new SaveFileDialog();
-                //saveDlg.DefaultExt = ".zip";
-                //saveDlg.FileName = sBaseName;
-
-                //if(saveDlg.ShowDialog() == DialogResult.OK)
-                //{
-                //    info = new ProcessStartInfo("7za.exe");
-                //    info.Arguments = string.Format("a  \"{0}\" -r -o\"{1}*.*\"", saveDlg.FileName, sTargetFolder);
-                //    info.WindowStyle = ProcessWindowStyle.Hidden;
-                //    Process.Start(info).WaitForExit();
-                //}
-
             }
+        }
+
+        private void btnProcess_Click(object sender, EventArgs e)
+        {
+            this.UseWaitCursor = true;
+            timerProgress.Start();
+            bgWorkerProcessing.RunWorkerAsync();
         }
 
 
@@ -89,14 +68,6 @@ namespace ComicRepacker
             dlg.FileName = txtBaseName.Text + ".zip";
             if (dlg.ShowDialog() == DialogResult.OK)
             {
-                DirectoryInfo dirInfoRoot = new DirectoryInfo(m_sTempFolder);
-                DirectoryInfo dirInfoSource = new DirectoryInfo(m_sSourceFolder);
-                DirectoryInfo dirInfoTarget = new DirectoryInfo(m_sTargetFolder);
-
-                dirInfoTarget.Create();
-                SlideFile(dirInfoSource, dirInfoTarget);
-
-
                 string sTargetPath = Path.Combine(m_sTargetFolder, "*.*");
                 ProcessStartInfo info = new ProcessStartInfo("7za.exe");
                 info.Arguments = string.Format("a  \"{0}\" -r \"{1}\"", dlg.FileName, sTargetPath);
@@ -104,7 +75,6 @@ namespace ComicRepacker
                 Process.Start(info).WaitForExit();
 
                 MessageBox.Show("Completed");
-
             }
         }
 
@@ -276,7 +246,7 @@ namespace ComicRepacker
             RefreshList();
 
             progressBar1.Value = 100;
-
+            this.UseWaitCursor = false;
         }
 
         private void timerProgress_Tick(object sender, EventArgs e)
@@ -302,6 +272,22 @@ namespace ComicRepacker
                     listTargetFiles.Items.Add(childInfo.Name);
                 }
             }
+        }
+
+        private void bgWorkerProcessing_DoWork(object sender, DoWorkEventArgs e)
+        {
+            DirectoryInfo dirInfoSource = new DirectoryInfo(m_sSourceFolder);
+            DirectoryInfo dirInfoTarget = new DirectoryInfo(m_sTargetFolder);
+
+            dirInfoTarget.Create();
+            SlideFile(dirInfoSource, dirInfoTarget);
+        }
+
+        private void bgWorkerProcessing_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            MessageBox.Show("Process Completed!");
+            this.UseWaitCursor = false;
+            timerProgress.Stop();
         }
     }
 }

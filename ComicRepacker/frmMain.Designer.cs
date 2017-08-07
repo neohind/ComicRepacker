@@ -39,6 +39,8 @@
             this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.timerProgress = new System.Windows.Forms.Timer(this.components);
             this.btnRefresh = new System.Windows.Forms.Button();
+            this.btnProcess = new System.Windows.Forms.Button();
+            this.bgWorkerProcessing = new System.ComponentModel.BackgroundWorker();
             this.SuspendLayout();
             // 
             // btnLoadFile
@@ -121,11 +123,27 @@
             this.btnRefresh.UseVisualStyleBackColor = true;
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
+            // btnProcess
+            // 
+            this.btnProcess.Location = new System.Drawing.Point(12, 85);
+            this.btnProcess.Name = "btnProcess";
+            this.btnProcess.Size = new System.Drawing.Size(75, 23);
+            this.btnProcess.TabIndex = 7;
+            this.btnProcess.Text = "Processing";
+            this.btnProcess.UseVisualStyleBackColor = true;
+            this.btnProcess.Click += new System.EventHandler(this.btnProcess_Click);
+            // 
+            // bgWorkerProcessing
+            // 
+            this.bgWorkerProcessing.DoWork += new System.ComponentModel.DoWorkEventHandler(this.bgWorkerProcessing_DoWork);
+            this.bgWorkerProcessing.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.bgWorkerProcessing_RunWorkerCompleted);
+            // 
             // frmMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(408, 381);
+            this.Controls.Add(this.btnProcess);
             this.Controls.Add(this.btnRefresh);
             this.Controls.Add(this.progressBar1);
             this.Controls.Add(this.label1);
@@ -154,6 +172,8 @@
         private System.Windows.Forms.ProgressBar progressBar1;
         private System.Windows.Forms.Timer timerProgress;
         private System.Windows.Forms.Button btnRefresh;
+        private System.Windows.Forms.Button btnProcess;
+        private System.ComponentModel.BackgroundWorker bgWorkerProcessing;
     }
 }
 
